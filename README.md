@@ -21,7 +21,7 @@ tv-shows
     $ tv-shows [options]
 
   Options
-    -d, --date [human date]  Display TV shows for given date or range of dates
+    -d, --date [human date]  Display TV shows for given date or range of dates in human readable format (Default: yesterday)
     -s, --choose-show  Choose TV show regardless of date
 ```
 

@@ -15,7 +15,7 @@ cli = meow([
 	'  $ tv-shows [options]',
 	'',
 	'Options',
-	'  -d, --date [human date]  Display TV shows for given date or range of dates',
+	'  -d, --date [human date]  Display TV shows for given date or range of dates in human readable format (Default: yesterday)',
 	'  -s, --choose-show  Choose TV show regardless of date'
 ].join('\n'), {
 	alias: {
@@ -23,6 +23,9 @@ cli = meow([
 		s: 'choose-show',
 		v: 'version',
 		h: 'help'
+	},
+	'default': {
+		date: 'yesterday'
 	}
 });
 
@@ -58,7 +61,7 @@ function chooseEpisode ( manager ) {
 
 	spinner.start();
 
-	return Promise.all(humanizedDate(cli.flags.date || 'yesterday').map(( date ) => {
+	return Promise.all(humanizedDate(cli.flags.date).map(( date ) => {
 		return manager.getEpisodesByDate(date);
 	}))
 		.then(( episodes ) => {
