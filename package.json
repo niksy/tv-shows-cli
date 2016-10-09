@@ -30,6 +30,7 @@
     "meow": "^3.7.0",
     "opn": "^4.0.0",
     "ora": "^0.3.0",
+    "os-homedir": "^1.0.2",
     "pify": "^2.3.0",
     "pretty-date": "^0.2.0",
     "run-applescript": "^3.0.0",

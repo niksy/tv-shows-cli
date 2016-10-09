@@ -25,6 +25,47 @@ tv-shows
     -s, --choose-show  Choose TV show regardless of date
 ```
 
+## Configuration
+
+Configuration is stored in `.tvshowsrc` file and parsed with [cosmiconfig][cosmiconfig].
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `subtitleLanguage` | `String|Number` | | [addic7ed-subtitles-api][subtitle-language] language identifier. |
+| `quality` | `String[]` | | [Video quality][video-quality]. |
+| `showsDir` | `String` | [OS homedir][os-homedir] | Shows directory location. Used for default subtitle download location. |
+| `maxItems` | `Number` | `15` | Maximum number of torrents and subtitles to display. |
+| `shows` | `Object[]` | | [List of shows][shows]. |
+
+### Example
+
+```json
+{
+	"subtitleLanguage": "en_US",
+	"quality": ["720p"],
+	"showsDir": "~/Movies",
+	"maxItems": 15,
+	"shows": [
+		{
+			"title": "Game of Thrones",
+			"webChannel": false,
+			"tvmazeId": 123,
+			"addic7edId": 456,
+			"searchQuery": [
+				"game of thrones",
+				"of thrones"
+			]
+		}
+	]
+}
+```
+
 ## License
 
 MIT © [Ivan Nikolić](http://ivannikolic.com)
+
+[subtitle-language]: https://github.com/niksy/addic7ed-subtitles-api#language
+[video-quality]: https://github.com/niksy/tv-shows#quality
+[shows]: https://github.com/niksy/tv-shows#show-configuration
+[cosmiconfig]: https://github.com/davidtheclark/cosmiconfig
+[os-homedir]: https://github.com/sindresorhus/os-homedir
