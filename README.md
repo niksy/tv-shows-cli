@@ -7,7 +7,7 @@ Personal TV shows manager.
 ## Install
 
 ```sh
-npm install niksy/tv-shows-cli --save
+npm install niksy/tv-shows-cli --global
 ```
 
 ## Usage
