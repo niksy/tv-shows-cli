@@ -91,7 +91,7 @@ if ( cli.flags.chooseShow || cli.flags.date ) {
 
 	return config()
 		.then(( conf ) => {
-			return new Manager(conf.shows);
+			return new Manager(conf.shows, _.pick(conf, ['subtitleLanguage', 'quality']));
 		}, ( err ) => {
 			spinner.text = err;
 			spinner.fail();
