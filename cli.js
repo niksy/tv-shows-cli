@@ -52,7 +52,7 @@ function chooseShow ( manager ) {
 		})
 		.then(( episodes ) => {
 			spinner.stop();
-			return _.sortByOrder(_.sortByOrder(episodes, ( episode ) => {
+			return _.orderBy(_.orderBy(episodes, ( episode ) => {
 				return episode.number;
 			}, ['desc']), ( episode ) => {
 				return episode.season;
