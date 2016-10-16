@@ -32,7 +32,8 @@ Configuration is stored in `.tvshowsrc` file and parsed with [cosmiconfig][cosmi
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `subtitleLanguage` | `String|Number` | | [addic7ed-subtitles-api][subtitle-language] language identifier. |
-| `quality` | `String[]` | | [Video quality][video-quality]. |
+| `quality` | `String[]` | | [Video/audio quality][quality]. |
+| `country` | `String[]` | | [Country schedule][country-schedule]. |
 | `showsDir` | `String` | [OS homedir][os-homedir] | Shows directory location. Used for default subtitle download location. |
 | `maxItems` | `Number` | `15` | Maximum number of torrents and subtitles to display. |
 | `shows` | `Object[]` | | [List of shows][shows]. |
@@ -43,6 +44,7 @@ Configuration is stored in `.tvshowsrc` file and parsed with [cosmiconfig][cosmi
 {
 	"subtitleLanguage": "en_US",
 	"quality": ["720p"],
+	"country": ["US", "GB"],
 	"showsDir": "~/Movies",
 	"maxItems": 15,
 	"shows": [
@@ -65,7 +67,8 @@ Configuration is stored in `.tvshowsrc` file and parsed with [cosmiconfig][cosmi
 MIT © [Ivan Nikolić](http://ivannikolic.com)
 
 [subtitle-language]: https://github.com/niksy/addic7ed-subtitles-api#language
-[video-quality]: https://github.com/niksy/tv-shows#quality
+[quality]: https://github.com/niksy/tv-shows#quality
 [shows]: https://github.com/niksy/tv-shows#show-configuration
 [cosmiconfig]: https://github.com/davidtheclark/cosmiconfig
 [os-homedir]: https://github.com/sindresorhus/os-homedir
+[country-schedule]: https://github.com/niksy/tv-shows#country
