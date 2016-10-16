@@ -34,6 +34,7 @@
     "pretty-date": "^0.2.0",
     "run-applescript": "^3.0.0",
     "truncate-middle": "^1.0.3",
+    "tvmaze-node": "^1.0.4",
     "untildify": "^3.0.2",
     "write": "^0.3.2"
   },
