@@ -31,7 +31,7 @@ Configuration is stored in `.tvshowsrc` file and parsed with [cosmiconfig][cosmi
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `subtitleLanguage` | `String|Number` | | [addic7ed-subtitles-api][subtitle-language] language identifier. |
+| `subtitleLanguage` | `String|Number` | | [Subtitle language][subtitle-language]. |
 | `quality` | `String[]` | | [Video/audio quality][quality]. |
 | `country` | `String[]` | | [Country schedule][country-schedule]. |
 | `showsDir` | `String` | [OS homedir][os-homedir] | Shows directory location. Used for default subtitle download location. |
@@ -66,7 +66,7 @@ Configuration is stored in `.tvshowsrc` file and parsed with [cosmiconfig][cosmi
 
 MIT © [Ivan Nikolić](http://ivannikolic.com)
 
-[subtitle-language]: https://github.com/niksy/addic7ed-subtitles-api#language
+[subtitle-language]: https://github.com/niksy/tv-shows#subtitlelanguage
 [quality]: https://github.com/niksy/tv-shows#quality
 [shows]: https://github.com/niksy/tv-shows#show-configuration
 [cosmiconfig]: https://github.com/davidtheclark/cosmiconfig

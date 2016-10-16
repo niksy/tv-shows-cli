@@ -105,7 +105,7 @@ if ( cli.flags.chooseShow || cli.flags.date ) {
 
 	return config()
 		.then(( conf ) => {
-			return new Manager(conf.shows, _.pick(conf, ['subtitleLanguage', 'quality']));
+			return new Manager(conf.shows, _.pick(conf, ['subtitleLanguage', 'quality', 'country']));
 		}, ( err ) => {
 			spinner.text = err;
 			spinner.fail();
