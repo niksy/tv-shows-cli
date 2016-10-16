@@ -4,8 +4,7 @@ var _ = require('lodash');
 var meow = require('meow');
 var spinner = require('ora')();
 var chalk = require('chalk');
-var pify = require('pify');
-var tvmaze = require('tvmaze-node');
+var got = require('got');
 var Manager = require('@niksy/tv-shows');
 var humanizedDate = require('./lib/humanized-date');
 var prompt = require('./lib/prompt');
@@ -36,9 +35,9 @@ function chooseShow ( manager ) {
 	spinner.start();
 
 	return Promise.all(manager.shows.map(( show ) => {
-		return pify(tvmaze.showById)(show.tvmazeId, false, false)
+		return got(`http://api.tvmaze.com/shows/${show.tvmazeId}`, { json: true })
 			.then(( res ) => {
-				show.setTitle(JSON.parse(res).name);
+				show.setTitle(res.body.name);
 				return show;
 			});
 	}))
