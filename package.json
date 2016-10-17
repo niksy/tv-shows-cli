@@ -1,6 +1,6 @@
 {
   "name": "@niksy/tv-shows-cli",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Personal TV shows manager.",
   "private": true,
   "author": "Ivan Nikolić <niksy5@gmail.com> (http://ivannikolic.com)",
