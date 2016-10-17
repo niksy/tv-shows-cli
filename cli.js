@@ -5,8 +5,9 @@ var meow = require('meow');
 var spinner = require('ora')();
 var chalk = require('chalk');
 var got = require('got');
+var parseDate = require('date.js');
+var parseDateRange = require('parse-human-date-range');
 var Manager = require('@niksy/tv-shows');
-var humanizedDate = require('./lib/humanized-date');
 var prompt = require('./lib/prompt');
 var config = require('./lib/config');
 var cli;
@@ -29,6 +30,20 @@ cli = meow([
 		date: 'yesterday'
 	}
 });
+
+/**
+ * @param  {String} str
+ *
+ * @return {Date[]}
+ */
+function humanizedDate ( str ) {
+	var now = new Date();
+	var res = parseDateRange(str, now);
+	if ( res.length === 1 && res[0].getTime() === now.getTime() ) {
+		res = [parseDate(str, now)];
+	}
+	return res;
+}
 
 function chooseShow ( manager ) {
 
