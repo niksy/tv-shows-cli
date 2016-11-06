@@ -39,6 +39,7 @@
     "pify": "^2.3.0",
     "pretty-date": "^0.2.0",
     "run-applescript": "^3.0.0",
+    "term-size": "^0.1.0",
     "truncate-middle": "^1.0.3",
     "untildify": "^3.0.2",
     "write": "^0.3.2"
