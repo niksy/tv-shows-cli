@@ -1,5 +1,7 @@
 # tv-shows-cli
 
+[![Build Status][ci-img]][ci]
+
 Personal TV shows manager.
 
 ![](https://github.com/niksy/tv-shows-cli/raw/master/media/usage.gif)
@@ -7,7 +9,7 @@ Personal TV shows manager.
 ## Install
 
 ```sh
-npm install niksy/tv-shows-cli --global
+npm install -g niksy/tv-shows-cli
 ```
 
 ## Usage
@@ -23,6 +25,7 @@ tv-shows
   Options
     -d, --date [human date]  Display TV shows for given date or range of dates in human readable format (Default: yesterday)
     -s, --choose-show  Choose TV show regardless of date
+    -o, --organize-files  Organize subtitle and video files
 ```
 
 ## Configuration
@@ -66,6 +69,8 @@ Configuration is stored in `.tvshowsrc` file and parsed with [cosmiconfig][cosmi
 
 MIT © [Ivan Nikolić](http://ivannikolic.com)
 
+[ci]: https://travis-ci.org/niksy/tv-shows-cli
+[ci-img]: https://travis-ci.org/niksy/tv-shows-cli.svg?branch=master
 [subtitle-language]: https://github.com/niksy/tv-shows#subtitlelanguage
 [quality]: https://github.com/niksy/tv-shows#quality
 [shows]: https://github.com/niksy/tv-shows#show-configuration

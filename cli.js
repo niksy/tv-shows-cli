@@ -10,6 +10,7 @@ var parseDateRange = require('parse-human-date-range');
 var Manager = require('@niksy/tv-shows');
 var prompt = require('./lib/prompt');
 var config = require('./lib/config');
+var organizeFiles = require('./lib/organize-files');
 var cli;
 
 cli = meow([
@@ -18,11 +19,13 @@ cli = meow([
 	'',
 	'Options',
 	'  -d, --date [human date]  Display TV shows for given date or range of dates in human readable format (Default: yesterday)',
-	'  -s, --choose-show  Choose TV show regardless of date'
+	'  -s, --choose-show  Choose TV show regardless of date',
+	'  -o, --organize-files  Organize subtitle and video files'
 ].join('\n'), {
 	alias: {
 		d: 'date',
 		s: 'choose-show',
+		o: 'organize-files',
 		v: 'version',
 		h: 'help'
 	},
@@ -115,7 +118,24 @@ function chooseEpisode ( manager ) {
 
 }
 
-if ( cli.flags.chooseShow || cli.flags.date ) {
+if ( cli.flags.organizeFiles ) {
+
+	spinner.start();
+
+	return organizeFiles()
+		.then(( paths ) => {
+			const count = paths.length;
+			spinner.text = `Moved ${count} ${count === 1 ? 'subtitle' : 'subtitles'}.`;
+			spinner.succeed();
+			return paths;
+		}, ( err ) => {
+			spinner.text = err;
+			spinner.fail();
+			spinner.text = '';
+			process.exit(1); // eslint-disable-line no-process-exit
+		});
+
+} else if ( cli.flags.chooseShow || cli.flags.date ) {
 
 	return config()
 		.then(( conf ) => {
