@@ -1,0 +1,11 @@
+instrumentation:
+  default-excludes: true
+  excludes:
+  	- lib/config.js
+reporting:
+  print: detail
+  reports:
+    - html
+check:
+  global:
+    statements: 80

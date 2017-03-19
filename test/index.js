@@ -8,6 +8,7 @@ const proxyquire = require('proxyquire');
 const pify = require('pify');
 const write = require('write');
 const del = require('del');
+const sinon = require('sinon');
 
 describe('Organize files', function () {
 
@@ -62,6 +63,275 @@ describe('Organize files', function () {
 				assert.equal(res[2], false);
 				assert.equal(res[3], false);
 			});
+
+	});
+
+});
+
+describe('Plex client', function () {
+
+	const PlexClient = require('../lib/plex-client');
+
+	describe('PlexClient#readToken', function () {
+
+		it('should reject if token file is not provided', function () {
+			const client = new PlexClient();
+			return client.readToken()
+				.catch(( err ) => {
+					assert.equal(err.message, 'Expected a token file location.');
+				});
+		});
+
+		it('should read API token', function () {
+			const PlexClient = proxyquire('../lib/plex-client', {
+				fs: {
+					readFile: ( f, opts, cb ) => {
+						cb(null, 'sophie');
+					}
+				}
+			});
+			const client = new PlexClient({
+				tokenFile: ''
+			});
+			return client.readToken()
+				.then(( token ) => {
+					assert.equal(token, 'sophie');
+				});
+		});
+
+	});
+
+	describe('PlexClient#writeToken', function () {
+
+		it('should reject if token file is not provided', function () {
+			const client = new PlexClient();
+			return client.writeToken('sophie')
+				.catch(( err ) => {
+					assert.equal(err.message, 'Expected a token file location.');
+				});
+		});
+
+		it('should reject if token string is not provided', function () {
+			const client = new PlexClient({
+				tokenFile: ''
+			});
+			return client.writeToken()
+				.catch(( err ) => {
+					assert.equal(err.message, 'Expected a string.');
+				});
+		});
+
+		it('should write API token', function () {
+			const PlexClient = proxyquire('../lib/plex-client', {
+				fs: {
+					writeFile: ( f, d, opts, cb ) => {
+						cb();
+					}
+				}
+			});
+			const client = new PlexClient({
+				tokenFile: ''
+			});
+			return client.writeToken('sophie')
+				.then(() => {
+					assert.equal(true, true);
+				});
+		});
+
+	});
+
+	describe('PlexClient#createClient', function () {
+
+		const PlexAPI = require('plex-api');
+
+		it('should create Plex API client', function () {
+			const client = new PlexClient();
+			client.createClient();
+			assert.equal(client.apiClient instanceof PlexAPI, true);
+		});
+
+	});
+
+	describe('PlexClient#resolveToken', function () {
+
+		it('should handle error when resolving token', function () {
+			const client = new PlexClient();
+			sinon.stub(client, 'readToken').rejects(null);
+			return client.resolveToken()
+				.then(( token ) => {
+					assert.equal(client.token, null);
+					assert.equal(token, null);
+				});
+		});
+
+		it('should return successfully resolved token', function () {
+			const client = new PlexClient();
+			sinon.stub(client, 'readToken').resolves('sophie');
+			return client.resolveToken()
+				.then(( token ) => {
+					assert.equal(client.token, 'sophie');
+					assert.equal(token, 'sophie');
+				});
+		});
+
+	});
+
+	describe('PlexClient#requestPin', function () {
+
+		it('should return PIN', function () {
+			const client = new PlexClient();
+			const expected = {
+				code: 'AAAA',
+				id: '42'
+			};
+			sinon.stub(client.pinAuth, 'getNewPin').resolves(expected);
+			client.createClient();
+			return client.requestPin()
+				.then(( pin ) => {
+					assert.deepEqual(client.pin, expected);
+					assert.deepEqual(pin, expected);
+				});
+		});
+
+	});
+
+	describe('PlexClient#requestToken', function () {
+
+		it('should return token if status is "authorized"', function () {
+
+			const client = new PlexClient();
+			client.pin = {
+				code: 'AAAA',
+				id: '42'
+			};
+			client.tokenRequestTimeout = 0;
+
+			sinon.stub(client.pinAuth, 'checkPinForAuth')
+				.callsArgWith(0, client.pin)
+				.callsArgWith(1, null, 'authorized');
+
+			client.pinAuth.token = 'daisy';
+
+			return client.requestToken()
+				.then(( token ) => {
+					assert.equal(client.token, 'daisy');
+					assert.equal(token, 'daisy');
+				});
+
+		});
+
+		it('should repeatedly call token request if status is "waiting"', function ( done ) {
+
+			const client = new PlexClient();
+			client.pin = {
+				code: 'AAAA',
+				id: '42'
+			};
+			client.tokenRequestTimeout = 1;
+			client.pinAuth.token = null;
+
+			const stub = sinon.stub(client.pinAuth, 'checkPinForAuth')
+				.callsArgWith(0, client.pin)
+				.callsArgWith(1, null, 'waiting');
+
+			stub.onSecondCall().resolves('daisy');
+
+			client.requestToken();
+
+			setTimeout(() => {
+				stub.secondCall.returnValue
+					.then(( res ) => {
+						assert.equal(res, 'daisy');
+						assert.equal(stub.callCount, 2);
+						done();
+					});
+			}, 20);
+
+		});
+
+		it('should reject if status is "invalid"', function () {
+
+			const client = new PlexClient();
+			client.pin = {
+				code: 'AAAA',
+				id: '42'
+			};
+			client.tokenRequestTimeout = 0;
+
+			sinon.stub(client.pinAuth, 'checkPinForAuth')
+				.callsArgWith(0, client.pin)
+				.callsArgWith(1, null, 'invalid');
+
+			return client.requestToken()
+				.catch(( err ) => {
+					assert.equal(err.message, 'PIN is no longer valid.');
+				});
+
+		});
+
+		it('should reject if PIN is not an object', function () {
+
+			const client = new PlexClient();
+
+			return client.requestToken()
+				.catch(( err ) => {
+					assert.equal(err.message, 'Expected an object.');
+				});
+
+		});
+
+	});
+
+	describe('PlexClient#refreshLibrary', function () {
+
+		it('should reject if API client is not available', function () {
+
+			const client = new PlexClient();
+
+			return client.refreshLibrary()
+				.catch(( err ) => {
+					assert.equal(err.message, 'Plex API client is not available.');
+				});
+
+		});
+
+		it('should query and refresh library', function () {
+
+			const client = new PlexClient();
+
+			client.createClient();
+
+			sinon.stub(client.apiClient, 'query').resolves({
+				MediaContainer: {
+					Directory: [
+						{
+							key: 0,
+							type: 'show'
+						},
+						{
+							key: 1,
+							type: 'movie'
+						},
+						{
+							key: 2,
+							type: 'show'
+						}
+					]
+				}
+			});
+			sinon.stub(client.apiClient, 'perform').callsFake(( query ) => {
+				return query;
+			});
+
+			return client.refreshLibrary()
+				.then(( res ) => {
+					assert.deepEqual(res, [
+						'/library/sections/0/refresh',
+						'/library/sections/2/refresh'
+					]);
+				});
+
+		});
 
 	});
 
