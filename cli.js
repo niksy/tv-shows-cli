@@ -113,10 +113,8 @@ function chooseEpisode ( manager ) {
 			return episodes;
 		})
 		.catch(( err ) => {
-			spinner.text = 'An error occured, please see provided details.';
+			spinner.text = `An error occured: ${err.message ? err.message : err}`;
 			spinner.fail();
-			spinner.text = '';
-			console.log(err);
 		});
 
 }
@@ -188,9 +186,8 @@ if ( cli.flags.organizeFiles ) {
 			spinner.succeed();
 			return res;
 		}, ( err ) => {
-			spinner.text = err;
+			spinner.text = `An error occured: ${err.message ? err.message : err}`;
 			spinner.fail();
-			spinner.text = '';
 			process.exit(1); // eslint-disable-line no-process-exit
 		});
 
@@ -200,9 +197,8 @@ if ( cli.flags.organizeFiles ) {
 		.then(( conf ) => {
 			return new Manager(conf.shows, _.pick(conf, ['subtitleLanguage', 'quality', 'country']));
 		}, ( err ) => {
-			spinner.text = err;
+			spinner.text = `An error occured: ${err.message ? err.message : err}`;
 			spinner.fail();
-			spinner.text = '';
 			process.exit(1); // eslint-disable-line no-process-exit
 		})
 		.then(( manager ) => {
