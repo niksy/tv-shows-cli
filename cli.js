@@ -10,11 +10,7 @@ const chalk = require('chalk');
 const got = require('got');
 const parseDate = require('date.js');
 const parseDateRange = require('parse-human-date-range');
-const Manager = require('@niksy/tv-shows');
-const prompt = require('./lib/prompt');
 const config = require('./lib/config');
-const organizeFiles = require('./lib/organize-files');
-const PlexClient = require('./lib/plex-client');
 
 const cli = meow([
 	'Usage',
@@ -52,6 +48,8 @@ function humanizedDate ( str ) {
 }
 
 function chooseShow ( manager ) {
+
+	const prompt = require('./lib/prompt');
 
 	spinner.start();
 
@@ -93,6 +91,8 @@ function chooseShow ( manager ) {
 
 function chooseEpisode ( manager ) {
 
+	const prompt = require('./lib/prompt');
+
 	spinner.start();
 
 	return Promise.all(humanizedDate(cli.flags.date).map(( date ) => {
@@ -120,6 +120,9 @@ function chooseEpisode ( manager ) {
 }
 
 if ( cli.flags.organizeFiles ) {
+
+	const organizeFiles = require('./lib/organize-files');
+	const PlexClient = require('./lib/plex-client');
 
 	spinner.start();
 
@@ -192,6 +195,8 @@ if ( cli.flags.organizeFiles ) {
 		});
 
 } else if ( cli.flags.chooseShow || cli.flags.date ) {
+
+	const Manager = require('@niksy/tv-shows');
 
 	return config()
 		.then(( conf ) => {
