@@ -25,7 +25,7 @@ tv-shows
   Options
     -d, --date [human date]  Display TV shows for given date or range of dates in human readable format (Default: yesterday)
     -s, --choose-show  Choose TV show regardless of date
-    -o, --organize-files  Organize subtitle and video files
+    -o, --organize-files  Organize subtitle and video files (optionally refreshing Plex Media Server library)
 ```
 
 ## Configuration
@@ -39,6 +39,7 @@ Configuration is stored in `.tvshowsrc` file and parsed with [cosmiconfig][cosmi
 | `country` | `String[]` | | [Country schedule][country-schedule]. |
 | `showsDir` | `String` | [OS homedir][os-homedir] | Shows directory location. Used for default subtitle download location. |
 | `maxItems` | `Number` | `15` | Maximum number of torrents and subtitles to display. |
+| `refreshPlexLibrary` | `Boolean` | `false` | Refresh [Plex][plex] library when organizing files. |
 | `shows` | `Object[]` | | [List of shows][shows]. |
 
 ### Example
@@ -50,6 +51,7 @@ Configuration is stored in `.tvshowsrc` file and parsed with [cosmiconfig][cosmi
 	"country": ["US", "GB"],
 	"showsDir": "~/Movies",
 	"maxItems": 15,
+	"refreshPlexLibrary": false,
 	"shows": [
 		{
 			"title": "Game of Thrones",
@@ -77,3 +79,4 @@ MIT © [Ivan Nikolić](http://ivannikolic.com)
 [cosmiconfig]: https://github.com/davidtheclark/cosmiconfig
 [os-homedir]: https://github.com/sindresorhus/os-homedir
 [country-schedule]: https://github.com/niksy/tv-shows#country
+[plex]: https://www.plex.tv/

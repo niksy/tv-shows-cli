@@ -4,6 +4,7 @@
 
 const _ = require('lodash');
 const meow = require('meow');
+const hasha = require('hasha');
 const spinner = require('ora')();
 const chalk = require('chalk');
 const got = require('got');
@@ -13,6 +14,7 @@ const Manager = require('@niksy/tv-shows');
 const prompt = require('./lib/prompt');
 const config = require('./lib/config');
 const organizeFiles = require('./lib/organize-files');
+const PlexClient = require('./lib/plex-client');
 
 const cli = meow([
 	'Usage',
@@ -21,7 +23,7 @@ const cli = meow([
 	'Options',
 	'  -d, --date [human date]  Display TV shows for given date or range of dates in human readable format (Default: yesterday)',
 	'  -s, --choose-show  Choose TV show regardless of date',
-	'  -o, --organize-files  Organize subtitle and video files'
+	'  -o, --organize-files  Organize subtitle and video files (optionally refreshing Plex Media Server library)'
 ].join('\n'), {
 	alias: {
 		d: 'date',
@@ -123,12 +125,68 @@ if ( cli.flags.organizeFiles ) {
 
 	spinner.start();
 
-	return organizeFiles()
-		.then(( paths ) => {
-			const count = paths.length;
-			spinner.text = `Moved ${count} ${count === 1 ? 'subtitle' : 'subtitles'}.`;
+	return config()
+		.then(( conf ) => {
+			return [
+				() => {
+					return organizeFiles()
+						.then(( paths ) => {
+							const count = paths.length;
+							spinner.text = `Moved ${count} ${count === 1 ? 'subtitle' : 'subtitles'}.`;
+							return paths;
+						});
+				},
+				() => {
+					if ( conf.refreshPlexLibrary ) {
+
+						const pkgName = conf.__pkg.pkg.name;
+						const pkgVersion = conf.__pkg.pkg.version;
+
+						const plexClient = new PlexClient({
+							tokenFile: `${conf.__configFilePath}_plextoken`,
+							apiClientOptions: {
+								options: {
+									identifier: hasha(pkgName, { algorithm: 'md5' }),
+									product: pkgName,
+									version: pkgVersion
+								}
+							}
+						});
+
+						return plexClient.resolveToken()
+							.then(( token ) => {
+
+								plexClient.createClient();
+
+								if ( token === null ) {
+									return plexClient.requestPin()
+										.then(( pin ) => {
+											spinner.text = `Enter PIN code ${chalk.bold(pin.code)} on https://plex.tv/link to link tv-shows CLI application with Plex Media Server…`;
+											return plexClient.requestToken();
+										})
+										.then(( newToken ) => {
+											spinner.text = 'tv-shows CLI application linked with Plex Media Server!';
+											plexClient.writeToken(newToken);
+											return true;
+										});
+								}
+								return true;
+
+							})
+							.then(() => {
+								return plexClient.refreshLibrary();
+							});
+
+					}
+					return Promise.resolve();
+				}
+			].reduce(( prev, next ) => {
+				return prev.then(next);
+			}, Promise.resolve());
+		})
+		.then(( res ) => {
 			spinner.succeed();
-			return paths;
+			return res;
 		}, ( err ) => {
 			spinner.text = err;
 			spinner.fail();
