@@ -40,6 +40,7 @@ Configuration is stored in `.tvshowsrc` file and parsed with [cosmiconfig][cosmi
 | `showsDir` | `String` | [OS homedir][os-homedir] | Shows directory location. Used for default subtitle download location. |
 | `maxItems` | `Number` | `15` | Maximum number of torrents and subtitles to display. |
 | `refreshPlexLibrary` | `Boolean` | `false` | Refresh [Plex][plex] library when organizing files. |
+| `removeWatchedEpisodes` | `Boolean` | `false` | Remove watched episodes from Plex library and trash. |
 | `shows` | `Object[]` | | [List of shows][shows]. |
 
 ### Example
@@ -52,6 +53,7 @@ Configuration is stored in `.tvshowsrc` file and parsed with [cosmiconfig][cosmi
 	"showsDir": "~/Movies",
 	"maxItems": 15,
 	"refreshPlexLibrary": false,
+	"removeWatchedEpisodes": false,
 	"shows": [
 		{
 			"title": "Game of Thrones",

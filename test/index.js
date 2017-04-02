@@ -282,20 +282,20 @@ describe('Plex client', function () {
 
 	});
 
-	describe('PlexClient#refreshLibrary', function () {
+	describe('PlexClient#getShowLibraries', function () {
 
 		it('should reject if API client is not available', function () {
 
 			const client = new PlexClient();
 
-			return client.refreshLibrary()
+			return client.getShowLibraries()
 				.catch(( err ) => {
 					assert.equal(err.message, 'Plex API client is not available.');
 				});
 
 		});
 
-		it('should query and refresh library', function () {
+		it('should query for show libraries', function () {
 
 			const client = new PlexClient();
 
@@ -319,6 +319,43 @@ describe('Plex client', function () {
 					]
 				}
 			});
+
+			return client.getShowLibraries()
+				.then(( res ) => {
+					assert.deepEqual(res, [
+						{
+							key: 0,
+							type: 'show'
+						},
+						{
+							key: 2,
+							type: 'show'
+						}
+					]);
+				});
+
+		});
+
+	});
+
+	describe('PlexClient#refreshLibrary', function () {
+
+		it('should query and refresh library', function () {
+
+			const client = new PlexClient();
+
+			client.createClient();
+
+			sinon.stub(client, 'getShowLibraries').resolves([
+				{
+					key: 0,
+					type: 'show'
+				},
+				{
+					key: 2,
+					type: 'show'
+				}
+			]);
 			sinon.stub(client.apiClient, 'perform').callsFake(( query ) => {
 				return query;
 			});
@@ -329,6 +366,89 @@ describe('Plex client', function () {
 						'/library/sections/0/refresh',
 						'/library/sections/2/refresh'
 					]);
+				});
+
+		});
+
+	});
+
+	describe('PlexClient#getWatchedEpisodes', function () {
+
+		it('should query and get watched episodes', function () {
+
+			const client = new PlexClient();
+
+			client.createClient();
+
+			sinon.stub(client, 'getShowLibraries').resolves([
+				{
+					key: 0,
+					type: 'show'
+				}
+			]);
+
+			sinon.stub(client.apiClient, 'query').resolves({
+				MediaContainer: {
+					Metadata: [
+						{
+							viewCount: 1,
+							ratingKey: '1',
+							grandparentTitle: 'jackie',
+							title: 'bandit'
+						},
+						{
+							ratingKey: '2',
+							grandparentTitle: 'odie',
+							title: 'ellie'
+						},
+						{
+							viewCount: 1,
+							ratingKey: '3',
+							grandparentTitle: 'riley',
+							title: 'chase'
+						}
+					]
+				}
+			});
+
+			return client.getWatchedEpisodes()
+				.then(( res ) => {
+					assert.deepEqual(res, [
+						{
+							id: 1,
+							showTitle: 'jackie',
+							episodeTitle: 'bandit'
+						},
+						{
+							id: 3,
+							showTitle: 'riley',
+							episodeTitle: 'chase'
+						}
+					]);
+				});
+
+		});
+
+	});
+
+	describe('PlexClient#removeEpisode', function () {
+
+		it('should remove watched episode', function () {
+
+			const client = new PlexClient();
+
+			client.createClient();
+
+			const stub = sinon.stub(client.apiClient, '_request').resolves(true);
+
+			return client.removeEpisode(42)
+				.then(( res ) => {
+					assert.equal(res, true);
+					assert.ok(stub.calledWith({
+						uri: '/library/metadata/42',
+						method: 'DELETE',
+						parseResponse: false
+					}));
 				});
 
 		});

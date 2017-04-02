@@ -121,77 +121,124 @@ function chooseEpisode ( manager ) {
 
 if ( cli.flags.organizeFiles ) {
 
+	const Listr = require('listr');
 	const organizeFiles = require('./lib/organize-files');
 	const PlexClient = require('./lib/plex-client');
 
-	spinner.start();
+	const getPlexClient = ( conf, task ) => {
+
+		const pkgName = conf.__pkg.pkg.name;
+		const pkgVersion = conf.__pkg.pkg.version;
+
+		const plexClient = new PlexClient({
+			tokenFile: `${conf.__configFilePath}_plextoken`,
+			apiClientOptions: {
+				options: {
+					identifier: hasha(pkgName, { algorithm: 'md5' }),
+					product: pkgName,
+					version: pkgVersion
+				}
+			}
+		});
+
+		return plexClient.resolveToken()
+			.then(( token ) => {
+
+				plexClient.createClient();
+
+				if ( token === null ) {
+					return plexClient.requestPin()
+						.then(( pin ) => {
+							task.title = `Enter PIN code ${chalk.bold(pin.code)} on https://plex.tv/link to link tv-shows CLI application with Plex Media Server…`;
+							return plexClient.requestToken();
+						})
+						.then(( newToken ) => {
+							task.title = 'tv-shows CLI application linked with Plex Media Server!';
+							plexClient.writeToken(newToken);
+							return plexClient;
+						});
+				}
+
+				return plexClient;
+
+			});
+
+	};
 
 	return config()
 		.then(( conf ) => {
-			return [
-				() => {
-					return organizeFiles()
-						.then(( paths ) => {
-							const count = paths.length;
-							spinner.text = `Moved ${count} ${count === 1 ? 'subtitle' : 'subtitles'}.`;
-							return paths;
-						});
-				},
-				() => {
-					if ( conf.refreshPlexLibrary ) {
 
-						const pkgName = conf.__pkg.pkg.name;
-						const pkgVersion = conf.__pkg.pkg.version;
+			const tasks = new Listr([
+				{
+					title: 'Moving subtitles…',
+					task: ( ctx, task ) => {
 
-						const plexClient = new PlexClient({
-							tokenFile: `${conf.__configFilePath}_plextoken`,
-							apiClientOptions: {
-								options: {
-									identifier: hasha(pkgName, { algorithm: 'md5' }),
-									product: pkgName,
-									version: pkgVersion
-								}
-							}
-						});
-
-						return plexClient.resolveToken()
-							.then(( token ) => {
-
-								plexClient.createClient();
-
-								if ( token === null ) {
-									return plexClient.requestPin()
-										.then(( pin ) => {
-											spinner.text = `Enter PIN code ${chalk.bold(pin.code)} on https://plex.tv/link to link tv-shows CLI application with Plex Media Server…`;
-											return plexClient.requestToken();
-										})
-										.then(( newToken ) => {
-											spinner.text = 'tv-shows CLI application linked with Plex Media Server!';
-											plexClient.writeToken(newToken);
-											return true;
-										});
-								}
-								return true;
-
-							})
-							.then(() => {
-								return plexClient.refreshLibrary();
+						return organizeFiles()
+							.then(( paths ) => {
+								const count = paths.length;
+								task.title = `Moved ${count} ${count === 1 ? 'subtitle' : 'subtitles'}`;
+								return paths;
 							});
 
 					}
-					return Promise.resolve();
+				},
+				{
+					title: 'Refreshing Plex library…',
+					enabled: () => {
+						return conf.refreshPlexLibrary;
+					},
+					task: ( ctx, task ) => {
+
+						return getPlexClient(conf, task)
+							.then(( plexClient ) => {
+								return plexClient.refreshLibrary();
+							})
+							.then(() => {
+								task.title = 'Plex library refreshed';
+								return true;
+							});
+
+					}
+				},
+				{
+					title: 'Removing watched episodes…',
+					enabled: () => {
+						return conf.removeWatchedEpisodes;
+					},
+					task: ( ctx, task ) => {
+
+						return getPlexClient(conf, task)
+							.then(( plexClient ) => {
+								return Promise.all([plexClient.getWatchedEpisodes(), Promise.resolve(plexClient)]);
+							})
+							.then(( res ) => {
+
+								const episodes = res[0];
+								const plexClient = res[1];
+
+								return Promise.all(episodes.map(( episode ) => {
+									return plexClient.removeEpisode(episode.id);
+								}))
+									.then(() => {
+										return episodes;
+									});
+
+							})
+							.then(( episodes ) => {
+								const count = episodes.length;
+								task.title = `Removed ${count} ${count === 1 ? 'episode' : 'episodes'}`;
+								return episodes;
+							});
+
+					}
 				}
-			].reduce(( prev, next ) => {
-				return prev.then(next);
-			}, Promise.resolve());
-		})
-		.then(( res ) => {
-			spinner.succeed();
-			return res;
-		}, ( err ) => {
-			spinner.text = `An error occured: ${err.message ? err.message : err}`;
-			spinner.fail();
-			process.exit(1); // eslint-disable-line no-process-exit
+			]);
+
+			return tasks.run()
+				.catch(() => {
+					process.exit(1); // eslint-disable-line no-process-exit
+				});
+
 		});
 
 } else if ( cli.flags.chooseShow || cli.flags.date ) {
