@@ -19,7 +19,7 @@ const cli = meow([
 	'Options',
 	'  -d, --date [human date]  Display TV shows for given (airing) date or range of dates in human readable format (Default: yesterday)',
 	'  -s, --choose-show  Choose TV show regardless of date',
-	'  -o, --organize-files  Organize subtitle and video files (optionally refreshing Plex Media Server library)'
+	'  -o, --organize-files  Organize subtitle and video files (optionally refreshing Plex Media Server library and removing watched episodes)'
 ].join('\n'), {
 	alias: {
 		d: 'date',

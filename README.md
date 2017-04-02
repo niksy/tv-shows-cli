@@ -25,7 +25,7 @@ tv-shows
   Options
     -d, --date [human date]  Display TV shows for given (airing) date or range of dates in human readable format (Default: yesterday)
     -s, --choose-show  Choose TV show regardless of date
-    -o, --organize-files  Organize subtitle and video files (optionally refreshing Plex Media Server library)
+    -o, --organize-files  Organize subtitle and video files (optionally refreshing Plex Media Server library and removing watched episodes)
 ```
 
 ## Configuration
@@ -41,7 +41,7 @@ Configuration is stored in `.tvshowsrc` file and parsed with [cosmiconfig][cosmi
 | `showsDir` | `String` | [OS homedir][os-homedir] | Shows directory location. Used for default subtitle download location. |
 | `maxItems` | `Number` | `15` | Maximum number of torrents and subtitles to display. |
 | `refreshPlexLibrary` | `Boolean` | `false` | Refresh [Plex][plex] library when organizing files. |
-| `removeWatchedEpisodes` | `Boolean` | `false` | Remove watched episodes from Plex library and trash. |
+| `removeWatchedEpisodes` | `Boolean` | `false` | Remove watched episodes from Plex library. |
 | `shows` | `Object[]` | | [List of shows][shows]. |
 
 ### Example
