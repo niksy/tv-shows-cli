@@ -56,7 +56,9 @@ function chooseShow ( manager ) {
 	return Promise.all(manager.shows.map(( show ) => {
 		return got(`http://api.tvmaze.com/shows/${show.tvmazeId}`, { json: true })
 			.then(( res ) => {
-				show.setTitle(res.body.name);
+				show.sync({
+					title: res.body.name
+				});
 				return show;
 			});
 	}))
@@ -111,10 +113,6 @@ function chooseEpisode ( manager ) {
 				prompt.chooseEpisodeForShow(episodes);
 			}
 			return episodes;
-		})
-		.catch(( err ) => {
-			spinner.text = `An error occured: ${err.message ? err.message : err}`;
-			spinner.fail();
 		});
 
 }
@@ -248,10 +246,6 @@ if ( cli.flags.organizeFiles ) {
 	return config()
 		.then(( conf ) => {
 			return new Manager(conf.shows, _.pick(conf, ['subtitleLanguage', 'quality', 'country', 'excludeTorrentService']));
-		}, ( err ) => {
-			spinner.text = `An error occured: ${err.message ? err.message : err}`;
-			spinner.fail();
-			process.exit(1); // eslint-disable-line no-process-exit
 		})
 		.then(( manager ) => {
 			if ( cli.flags.chooseShow ) {
@@ -260,6 +254,11 @@ if ( cli.flags.organizeFiles ) {
 				return chooseEpisode(manager);
 			}
 			return manager;
+		})
+		.catch(( err ) => {
+			spinner.text = `An error occured: ${err.message ? err.message : err}`;
+			spinner.fail();
+			process.exit(1); // eslint-disable-line no-process-exit
 		});
 
 }
