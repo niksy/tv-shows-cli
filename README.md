@@ -37,6 +37,7 @@ Configuration is stored in `.tvshowsrc` file and parsed with [cosmiconfig][cosmi
 | `subtitleLanguage` | `String|Number` | | [Subtitle language][subtitle-language]. |
 | `quality` | `String[]` | | [Video/audio quality][quality]. |
 | `country` | `String[]` | | [Country schedule][country-schedule]. |
+| `excludeTorrentService` | `String[]` | `[]` | [Exclude torrent service][exclude-torrent-service] from checking. |
 | `showsDir` | `String` | [OS homedir][os-homedir] | Shows directory location. Used for default subtitle download location. |
 | `maxItems` | `Number` | `15` | Maximum number of torrents and subtitles to display. |
 | `refreshPlexLibrary` | `Boolean` | `false` | Refresh [Plex][plex] library when organizing files. |
@@ -50,6 +51,7 @@ Configuration is stored in `.tvshowsrc` file and parsed with [cosmiconfig][cosmi
 	"subtitleLanguage": "en_US",
 	"quality": ["720p"],
 	"country": ["US", "GB"],
+	"excludeTorrentService": [],
 	"showsDir": "~/Movies",
 	"maxItems": 15,
 	"refreshPlexLibrary": false,
@@ -63,6 +65,9 @@ Configuration is stored in `.tvshowsrc` file and parsed with [cosmiconfig][cosmi
 			"searchQuery": [
 				"game of thrones",
 				"of thrones"
+			],
+			"advancedSearchQuery": [
+				"game of thrones {{ season }} {{ episode }}"
 			]
 		}
 	]
@@ -77,6 +82,7 @@ MIT © [Ivan Nikolić](http://ivannikolic.com)
 [ci-img]: https://travis-ci.org/niksy/tv-shows-cli.svg?branch=master
 [subtitle-language]: https://github.com/niksy/tv-shows#subtitlelanguage
 [quality]: https://github.com/niksy/tv-shows#quality
+[exclude-torrent-service]: https://github.com/niksy/tv-shows#excludetorrentservice
 [shows]: https://github.com/niksy/tv-shows#show-configuration
 [cosmiconfig]: https://github.com/davidtheclark/cosmiconfig
 [os-homedir]: https://github.com/sindresorhus/os-homedir

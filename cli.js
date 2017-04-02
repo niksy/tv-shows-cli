@@ -247,7 +247,7 @@ if ( cli.flags.organizeFiles ) {
 
 	return config()
 		.then(( conf ) => {
-			return new Manager(conf.shows, _.pick(conf, ['subtitleLanguage', 'quality', 'country']));
+			return new Manager(conf.shows, _.pick(conf, ['subtitleLanguage', 'quality', 'country', 'excludeTorrentService']));
 		}, ( err ) => {
 			spinner.text = `An error occured: ${err.message ? err.message : err}`;
 			spinner.fail();
