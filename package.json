@@ -29,6 +29,7 @@
     "fuzzaldrin": "^2.1.0",
     "globby": "^6.1.0",
     "got": "~6.5.0",
+    "hard-rejection": "^1.0.0",
     "hasha": "^2.2.0",
     "inquirer": "^1.2.1",
     "is-directory": "^0.3.1",

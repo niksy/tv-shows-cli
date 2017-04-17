@@ -11,6 +11,12 @@ const got = require('got');
 const parseDate = require('date.js');
 const parseDateRange = require('parse-human-date-range');
 const config = require('./lib/config');
+const hardRejection = require('hard-rejection');
+
+hardRejection(( err ) => {
+	spinner.text = `An error occured: ${err.message ? err.message : err}`;
+	spinner.fail();
+});
 
 const cli = meow([
 	'Usage',
@@ -261,11 +267,6 @@ if ( cli.flags.organizeFiles ) {
 				return chooseEpisode(manager);
 			}
 			return manager;
-		})
-		.catch(( err ) => {
-			spinner.text = `An error occured: ${err.message ? err.message : err}`;
-			spinner.fail();
-			process.exit(1); // eslint-disable-line no-process-exit
 		});
 
 }
