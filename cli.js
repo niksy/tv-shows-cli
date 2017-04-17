@@ -120,6 +120,7 @@ function chooseEpisode ( manager ) {
 if ( cli.flags.organizeFiles ) {
 
 	const Listr = require('listr');
+	const emptyTrash = require('empty-trash');
 	const organizeFiles = require('./lib/organize-files');
 	const PlexClient = require('./lib/plex-client');
 
@@ -221,6 +222,12 @@ if ( cli.flags.organizeFiles ) {
 										return episodes;
 									});
 
+							})
+							.then(( episodes ) => {
+								return emptyTrash()
+									.then(() => {
+										return episodes;
+									});
 							})
 							.then(( episodes ) => {
 								const count = episodes.length;
