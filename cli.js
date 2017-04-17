@@ -121,7 +121,7 @@ if ( cli.flags.organizeFiles ) {
 
 	const Listr = require('listr');
 	const emptyTrash = require('empty-trash');
-	const organizeFiles = require('./lib/organize-files');
+	const organizeSubtitles = require('./lib/organize-subtitles');
 	const PlexClient = require('./lib/plex-client');
 
 	const getPlexClient = ( conf, task ) => {
@@ -172,7 +172,7 @@ if ( cli.flags.organizeFiles ) {
 					title: 'Moving subtitles…',
 					task: ( ctx, task ) => {
 
-						return organizeFiles()
+						return organizeSubtitles()
 							.then(( paths ) => {
 								const count = paths.length;
 								task.title = `Moved ${count} ${count === 1 ? 'subtitle' : 'subtitles'}`;

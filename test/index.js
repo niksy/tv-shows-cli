@@ -10,7 +10,7 @@ const write = require('write');
 const del = require('del');
 const sinon = require('sinon');
 
-describe('Organize files', function () {
+describe('Organize subtitles', function () {
 
 	const tmpDir = path.resolve(os.tmpdir(), 'tv-shows-cli');
 
@@ -33,7 +33,7 @@ describe('Organize files', function () {
 
 	it('should move subtitle files to video folder and remove original files', function () {
 
-		const organizeFiles = proxyquire('../lib/organize-files', {
+		const organizeSubtitles = proxyquire('../lib/organize-subtitles', {
 			'./config': () => {
 				return Promise.resolve({
 					showsDir: tmpDir
@@ -41,7 +41,7 @@ describe('Organize files', function () {
 			}
 		});
 
-		return organizeFiles()
+		return organizeSubtitles()
 			.then(() => {
 				return Promise.all([
 					'belle.s01e01/belle.s01e01.hdtv.srt',
