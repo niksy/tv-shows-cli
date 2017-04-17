@@ -25,6 +25,7 @@
     "del": "^2.2.2",
     "empty-trash": "^2.1.1",
     "figures": "^1.7.0",
+    "filenamify": "^2.0.0",
     "fuzzaldrin": "^2.1.0",
     "globby": "^6.1.0",
     "got": "~6.5.0",
